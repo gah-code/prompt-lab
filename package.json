@@ -7,13 +7,16 @@
   "scripts": {
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
-    "preview": "vitepress preview docs"
+    "preview": "vitepress preview docs",
+    "lint:md": "markdownlint-cli2 \"docs/**/*.md\"",
+    "lint:md:fix": "markdownlint-cli2 --fix \"docs/**/*.md\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "markdownlint-cli2": "^0.18.1",
     "vitepress": "latest"
   }
 }

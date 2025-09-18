@@ -2,9 +2,9 @@
 title: Prompt Lab
 layout: home
 hero:
-  name: Prompt Lab
-  text: Notes & Experiments in Prompt Engineering
-  tagline: From basics → patterns → evaluation. Document the process, not just the prompts.
+  name: Practical Prompt
+  text: Engineering Lab — Methods, Patterns & Evaluation
+  tagline: Learn by doing runnable examples, clear evaluations, and process-first documentation.
   actions:
     - theme: brand
       text: Start with Foundations

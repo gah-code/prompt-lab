@@ -1,0 +1,27 @@
+{
+  "default": true,
+  "MD013": {
+    "line_length": 120,
+    "heading_line_length": 120,
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD041": false,
+  "MD025": { "front_matter_title": "title" },
+  "MD033": {
+    "allowed_elements": ["details", "summary", "kbd", "sup", "sub", "br"]
+  },
+  "MD024": { "siblings_only": true },
+  "MD029": { "style": "one" },
+  "MD030": { "ul_single": 1, "ol_single": 1 },
+  "MD046": { "style": "fenced" },
+  "MD040": true,
+  "MD007": { "indent": 2 },
+  "MD012": { "maximum": 2 },
+  "MD022": true,
+  "MD031": true,
+  "MD010": true,
+  "MD036": true,
+  "MD039": true,
+  "MD004": { "style": "consistent" }
+}
