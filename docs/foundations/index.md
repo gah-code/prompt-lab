@@ -2,6 +2,10 @@
 
 Prompt engineering is design under constraints. We shape *inputs* to shape *behavior*, then we test.
 
+## Key Guides
+
+- [Using Delimiters in Prompt Engineering](./delimiters.md)
+
 ## Anatomy of a Prompt
 
 - **Goal**: What must be true at the end? (e.g., “extract entities into JSON”)
