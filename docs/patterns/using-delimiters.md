@@ -8,7 +8,8 @@ lastUpdated: true
 
 # Using Delimiters in Prompt Engineering for Documentation & Product Development
 
-Delimiters are special markers that **separate instructions, inputs, and outputs** so models don’t mix them up. They improve **clarity**, **format control**, and **safety** across docs and product flows (specs, changelogs, feature descriptions, bug reports).
+Delimiters are special markers that **separate instructions, inputs, and outputs**, preventing models from confusing them. They enhance **clarity**, **control over formatting**, and safety across documents and product workflows, including specifications, changelogs, feature descriptions, and bug reports.
+
 
 ---
 

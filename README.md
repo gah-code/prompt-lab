@@ -17,6 +17,33 @@ This repo focuses on:
 - **Evaluation** – experiment log template at `/evaluation/#experiment-log-template`.
 - **Patterns** – modular blueprints (kept brief and testable).
 
+---
+
+```
+prompt-lab/
+├── README.md                   # Project overview and principles of prompt engineering
+├── LICENSE                     # MIT licence
+├── package.json                # Node package configuration
+├── package-lock.json           # Lockfile
+├── .gitattributes              # Git attributes
+├── .gitignore                  # Files/directories to ignore in Git
+├── .markdownlint.json          # Markdown linter configuration
+└── docs/                       # Source for the VitePress site
+    ├── index.md                # Home page (hero section, quick actions, core features)
+    ├── foundations/            # Introductory material on prompt engineering
+    │   ├── index.md            # Defines prompt engineering, lists key guides, anatomy of a prompt
+    │   └── delimiters.md       # Detailed guide on using delimiters and best practices
+    ├── patterns/               # Reusable patterns and scaffolds
+    │   └── index.md            # Zero‑shot vs few‑shot prompting and classification examples
+    ├── evaluation/             # Guidance for testing prompts
+    │   └── index.md            # Experiment log template, metadata fields, scoring rubric
+    └── .vitepress/             # Configuration for the VitePress site
+        └── config.js           # Site‑wide settings, navigation and theme configuration
+```
+
+--
+
+
 ## Principles
 
 - **Minimal Setup:** Only what you need to think clearly and iterate quickly.
