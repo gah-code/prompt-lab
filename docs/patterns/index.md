@@ -1,3 +1,4 @@
+
 # Patterns
 
 ## Zero/Few-Shot
@@ -14,3 +15,10 @@ Rules:
 - Output one label only.
 - If uncertain, output "account".
 Input: "<ticket>"
+````
+
+## Formatting & Safety
+
+- **Using Delimiters in Prompt Engineering** — how to segment instructions, inputs, and outputs for clarity, structure, and security.
+  → [/patterns/using-delimiters](/patterns/using-delimiters)
+
