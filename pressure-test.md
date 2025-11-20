@@ -240,3 +240,200 @@ At that point, it’s no longer just a manifest; it’s the **index** your agent
 * Orphaned fragment detection.
 
 That little structure is the “map” your AI agents will use to navigate your AEM world without getting lost.
+
+
+---
+
+Nice, that constraint actually *simplifies* the world:
+
+> Golden CFs are the source of truth.
+> Variants **always** exist *because* they were rolled down from the golden.
+> Another team only localizes language, not structure.
+
+Let’s bake that into the tiny experiment and the tooling concept.
+
+---
+
+## 1. What your “golden-centric” rule changes
+
+Two key implications:
+
+1. **Direction is fixed:**
+
+   * Golden → rolled down → localized variants.
+   * There should never be a “random variant” that isn’t tied to a golden.
+
+2. **Responsibilities split:**
+
+   * Global team: owns **structure + canonical content** in the golden CF.
+   * Local team: owns **textual/localizable fields only** in variants.
+
+So our tools and agents should:
+
+* Start from **golden CFs only**.
+* Derive or verify **all variants** from each golden.
+* Enforce “local team can only change translatable fields”.
+
+---
+
+## 2. Updated Path Data Manifest (golden-first)
+
+Let’s adjust the manifest from before so it explicitly encodes:
+
+* “This CF is golden.”
+* “These are the locales expected to exist below it.”
+* “These variant paths were rolled down from this golden.”
+
+For the tiny experiment (1 golden, 1 variant), a good shape is:
+
+```jsonc
+{
+  "targets": [
+    {
+      "targetId": "widget-x",
+      "targetLabel": "Widget X Pro",
+      "cfModel": "product-detail",
+
+      "golden": {
+        "isGolden": true,
+        "ownerTeam": "Global Content",
+        "locale": "en-US",
+        "cfPath": "/content/dam/site/content-fragments/products/widget-x/en-us-product-detail",
+        "pageUrl": "/us/en/products/widget-x",
+        "expectedLocales": ["fr-FR"]         // what *should* exist below
+      },
+
+      "variants": [
+        {
+          "locale": "fr-FR",
+          "cfPath": "/content/dam/site/content-fragments/products/widget-x/fr-fr-product-detail",
+          "pageUrl": "/fr/fr/produits/widget-x",
+          "sourceGoldenPath": "/content/dam/site/content-fragments/products/widget-x/en-us-product-detail",
+          "ownerTeam": "FR Local Market"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Two important details:
+
+* `expectedLocales` lives on the **golden** definition.
+* Each variant has a `sourceGoldenPath` so your tools/agents always know where it came from.
+
+Even at this tiny scale, this gives you:
+
+* Fast navigation: start at golden → jump to all variants.
+* A clear contract: “If `expectedLocales` includes `fr-FR`, there *must* be a variant for it.”
+
+---
+
+## 3. How to gather & organize this for your tiny test
+
+For the experiment with **just 2 fragments**:
+
+1. **Start from the golden CF list**, not the variants:
+
+   * Decide your set of “golden targets” (e.g. one for each product or key page).
+   * For each, note:
+
+     * `targetId`
+     * `cfModel`
+     * `golden.cfPath`
+     * `golden.pageUrl`
+     * `golden.expectedLocales` (for now: `["fr-FR"]`)
+
+2. **Then fill in variants per golden:**
+
+   * For `widget-x` + `fr-FR`:
+
+     * Paste variant `cfPath` and `pageUrl`.
+     * Set `sourceGoldenPath` to the golden’s `cfPath`.
+
+3. **Store this manifest** in version control:
+
+   * e.g. `config/cf-targets.json`.
+
+4. **Use golden as the index key:**
+
+   * Search by `targetId` → see golden + all variants.
+   * Search by `golden.cfPath` → list all variants for that exact CF.
+   * Search by `locale` → see all variants in that locale and their goldens.
+
+That’s enough to let an agent quickly answer:
+
+> “Show me all variants of the golden `widget-x` fragment, and whether they’re consistent.”
+
+---
+
+## 4. Tiny navigation/search helper (golden-centric)
+
+Still staying in “tiny experiment” territory, you could imagine something like:
+
+```js
+// pseudo-code for golden-centric lookup
+
+const manifest = require('./cf-targets.json');
+
+function getGolden(targetId) {
+  return manifest.targets.find(t => t.targetId === targetId)?.golden;
+}
+
+function getVariantsForGolden(goldenPath) {
+  return manifest.targets
+    .flatMap(t => t.variants.map(v => ({ targetId: t.targetId, ...v })))
+    .filter(v => v.sourceGoldenPath === goldenPath);
+}
+
+// Example usage:
+
+const golden = getGolden('widget-x');
+// => golden.cfPath = "/content/dam/.../en-us-product-detail"
+
+const variants = getVariantsForGolden(golden.cfPath);
+// => [{ locale: "fr-FR", cfPath: "/content/dam/.../fr-fr-product-detail", ... }]
+```
+
+This is deliberately small, but it proves the navigation model:
+
+* Start from **golden** → get all variants → feed into your consistency checks.
+
+---
+
+## 5. How the “golden-first” rule shapes your first agent
+
+Reusing the diff + agent idea from before, the rules get sharper:
+
+* **Golden is canonical:**
+
+  * All structural fields must match the golden:
+
+    * Model type
+    * Presence of required fields
+    * Reference relationships (e.g. nested CF references)
+
+* **Variants may only change translatable fields:**
+
+  * e.g., `title`, `subtitle`, `shortDescription`, `longDescription`, `ctaLabel`.
+  * Non-translatable fields (like `heroImage`, `productId`, maybe `price` depending on org) should either:
+
+    * match golden exactly, or
+    * differ only where you explicitly allow it.
+
+So the tiny experiment’s **Golden vs Locale agent** can assume:
+
+1. There *must* be a variant for each `expectedLocales` entry
+   (if missing → error).
+2. All non-translatable fields must match golden
+   (if changed → error).
+3. All translatable fields **should** differ in ways consistent with the locale
+   (if they don’t differ at all, you might flag “missing translation” as a soft warning).
+
+---
+
+If you’re comfortable with this golden-first framing, the next useful step is:
+
+> For `product-detail`, which fields in your real model are **translatable** vs **structural**?
+
+Once you list 5–8 real fields from your actual CF model and split them into those two buckets, we can shape the *exact* rule set your first agent would use in production.
